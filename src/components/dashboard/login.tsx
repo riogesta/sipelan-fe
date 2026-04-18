@@ -76,7 +76,7 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: () => void }) {
                         </div>
 
                         <div className="grid gap-2">
-                            <label htmlFor="password" name="password" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                            <label htmlFor="password" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                                 Password
                             </label>
                             <input
