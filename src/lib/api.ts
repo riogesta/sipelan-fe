@@ -9,16 +9,13 @@ import type {
     TransactionInput,
 } from "./types"
 
-const API_BASE = "http://localhost:8080/api"
+const API_BASE = "http://localhost:8081/api"
 
-async function request<T>(
-    endpoint: string,
-    options?: RequestInit
-): Promise<T> {
+async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const token = localStorage.getItem("sipelan-token")?.trim()
     const headers: HeadersInit = {
         "Content-Type": "application/json",
-        ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options?.headers,
     }
 
@@ -37,7 +34,9 @@ async function request<T>(
     }
 
     if (!res.ok) {
-        const error = await res.json().catch(() => ({ message: "Request failed" }))
+        const error = await res
+            .json()
+            .catch(() => ({ message: "Request failed" }))
         throw new Error(error.message || `HTTP ${res.status}`)
     }
 
@@ -46,15 +45,20 @@ async function request<T>(
 
 // ─── Auth ────────────────────────────────────────────────────
 
-export async function login(username: string, password: string): Promise<ApiResponse<{ token: string }>> {
-    const res = await fetch(`http://localhost:8080/auth/login`, {
+export async function login(
+    username: string,
+    password: string
+): Promise<ApiResponse<{ token: string }>> {
+    const res = await fetch(`http://localhost:8081/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password }),
     })
 
     if (!res.ok) {
-        const error = await res.json().catch(() => ({ message: "Login failed" }))
+        const error = await res
+            .json()
+            .catch(() => ({ message: "Login failed" }))
         throw new Error(error.message || `HTTP ${res.status}`)
     }
 
@@ -95,9 +99,7 @@ export async function updateCategory(
     })
 }
 
-export async function deleteCategory(
-    id: number
-): Promise<ApiResponse<null>> {
+export async function deleteCategory(id: number): Promise<ApiResponse<null>> {
     return request(`/categories/${id}`, {
         method: "DELETE",
     })
@@ -163,4 +165,3 @@ export async function getMonthlySummary(
     const params = year ? `?year=${year}` : ""
     return request(`/summary/monthly${params}`)
 }
-
