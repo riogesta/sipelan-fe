@@ -9,7 +9,8 @@ import type {
     TransactionInput,
 } from "./types"
 
-const API_BASE = "http://localhost:8081/api"
+const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:8081").replace(/\/$/, "")
+const API_BASE = `${API_URL}/api`
 
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const token = localStorage.getItem("sipelan-token")?.trim()
@@ -49,7 +50,7 @@ export async function login(
     username: string,
     password: string
 ): Promise<ApiResponse<{ token: string }>> {
-    const res = await fetch(`http://localhost:8081/auth/login`, {
+    const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
