@@ -9,7 +9,9 @@ import type {
     TransactionInput,
 } from "./types"
 
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:8081").replace(/\/$/, "")
+const API_URL = (
+    import.meta.env.VITE_API_URL || "http://localhost:8081"
+).replace(/\/$/, "")
 const API_BASE = `${API_URL}/api`
 
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
