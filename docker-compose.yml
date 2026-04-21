@@ -1,18 +1,11 @@
-version: '3.8'
+networks:
+    private-inet:
+        external: true
 
 services:
-  sipelan-fe:
-    build:
-      context: .
-      args:
-        - VITE_API_URL=${VITE_API_URL:-http://localhost:8081}
-    container_name: sipelan-fe
-    ports:
-      - "80:80"
-    restart: unless-stopped
-    networks:
-      - private-inet
-
-networks:
-  private-inet:
-    external: true
+    sipelan-fe:
+        build: .
+        ports:
+            - "4173:4173"
+        container_name: sipelan-fe
+        restart: unless-stopped
