@@ -27,14 +27,14 @@ export function StatsCard({
 }: StatsCardProps) {
     return (
         <Card className={cn("p-4 flex flex-col h-full", className)}>
-            <CardHeader className="flex flex-row items-center p-0 pb-2">
-                <div className="grid flex-1 gap-1 text-left">
-                    <CardTitle>{title}</CardTitle>
-                    <CardDescription>{description}</CardDescription>
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 p-0 pb-2">
+                <div className="grid flex-1 gap-0.5 text-left">
+                    <CardTitle className="text-sm sm:text-base">{title}</CardTitle>
+                    <CardDescription className="text-[10px] sm:text-xs leading-tight">{description}</CardDescription>
                 </div>
-                <div className="flex flex-col gap-1 border-l px-4 text-left">
-                    <span className="text-xs text-muted-foreground">Total</span>
-                    <span className="text-2xl font-bold leading-none">
+                <div className="flex flex-col gap-0.5 sm:border-l sm:px-4 text-left">
+                    <span className="text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-widest opacity-70">Total</span>
+                    <span className="text-lg sm:text-xl font-bold leading-none tracking-tight">
                         {value}
                     </span>
                 </div>

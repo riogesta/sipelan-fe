@@ -118,11 +118,11 @@ function App() {
     const renderCategories = () => (
         <div className="space-y-6">
             <div className="flex justify-between items-center bg-card p-4 rounded-lg border shadow-sm">
-                <div>
-                    <h2 className="text-xl font-bold">Master Data Kategori</h2>
-                    <p className="text-sm text-muted-foreground">Kelola pengelompokan transaksi anda</p>
+                <div className="space-y-0.5">
+                    <h2 className="text-base font-bold tracking-tight">Master Data Kategori</h2>
+                    <p className="text-[11px] text-muted-foreground">Kelola pengelompokan transaksi anda</p>
                 </div>
-                <div className="w-48">
+                <div className="w-40">
                     <CategoryDialog 
                         addCategory={addCategory} 
                         editCategory={editCategory}

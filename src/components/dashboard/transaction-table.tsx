@@ -43,7 +43,7 @@ function createColumns(
             accessorKey: "category",
             header: "Kategori",
             cell: ({ row }) => (
-                <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium">
+                <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium">
                     {row.original.category?.name ?? "-"}
                 </span>
             ),
@@ -55,7 +55,7 @@ function createColumns(
                 const type = row.original.type
                 return (
                     <span
-                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors ${
+                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold transition-colors ${
                             type === "pemasukan"
                                 ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300"
                                 : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
@@ -73,7 +73,7 @@ function createColumns(
                 const type = row.original.type
                 return (
                     <div
-                        className={`font-medium ${
+                        className={`font-semibold text-xs ${
                             type === "pemasukan"
                                 ? "text-emerald-600"
                                 : "text-red-600"
@@ -208,8 +208,8 @@ export function TransactionTable({
     const totalPages = pagination?.total_pages || 1
 
     return (
-        <div className="w-full space-y-4">
-            <h2 className="text-lg font-bold mx-1 text-foreground">
+        <div className="w-full space-y-3">
+            <h2 className="text-sm font-bold mx-1 text-foreground uppercase tracking-wider opacity-80">
                 Riwayat Transaksi
             </h2>
             <DataTable columns={columns} data={transactions} />

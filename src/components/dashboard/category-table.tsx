@@ -27,7 +27,7 @@ function createColumns(
             accessorKey: "name",
             header: "Nama Kategori",
             cell: ({ row }) => (
-                <div className="font-medium text-foreground">
+                <div className="font-semibold text-xs text-foreground">
                     {row.original.name}
                 </div>
             ),
@@ -36,7 +36,7 @@ function createColumns(
             accessorKey: "description",
             header: "Deskripsi",
             cell: ({ row }) => (
-                <div className="text-muted-foreground max-w-[300px] truncate">
+                <div className="text-muted-foreground text-[11px] max-w-[300px] truncate">
                     {row.original.description || "-"}
                 </div>
             ),
@@ -174,8 +174,8 @@ export function CategoryTable({
     }
 
     return (
-        <div className="w-full">
-            <h2 className="text-lg font-bold mb-4 mx-1 text-foreground">
+        <div className="w-full space-y-3">
+            <h2 className="text-sm font-bold mb-3 mx-1 text-foreground uppercase tracking-wider opacity-80">
                 Master Data Kategori
             </h2>
             <DataTable columns={columns} data={categories} />
