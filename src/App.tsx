@@ -158,7 +158,7 @@ function App() {
                     title="Pemasukan"
                     description="Kelola data pemasukan anda"
                     value={formatRupiah(summary?.total_pemasukan ?? 0)}
-                    chart={<OverviewChart type="pemasukan" data={chartData} loading={chartLoading} year={currentYear} viewLabel={chartView === 'daily' ? 'Harian' : chartView === 'weekly' ? 'Mingguan' : 'Bulanan'} />}
+                    chart={<OverviewChart type="pemasukan" data={chartData} loading={chartLoading} viewLabel={chartView === 'daily' ? 'Harian' : chartView === 'weekly' ? 'Mingguan' : 'Bulanan'} />}
                     action={
                         <TransactionDialog
                             type="income"
@@ -173,7 +173,7 @@ function App() {
                     title="Pengeluaran"
                     description="Kelola data pengeluaran anda"
                     value={formatRupiah(summary?.total_pengeluaran ?? 0)}
-                    chart={<OverviewChart type="pengeluaran" data={chartData} loading={chartLoading} year={currentYear} viewLabel={chartView === 'daily' ? 'Harian' : chartView === 'weekly' ? 'Mingguan' : 'Bulanan'} />}
+                    chart={<OverviewChart type="pengeluaran" data={chartData} loading={chartLoading} viewLabel={chartView === 'daily' ? 'Harian' : chartView === 'weekly' ? 'Mingguan' : 'Bulanan'} />}
                     action={
                         <TransactionDialog
                             type="expense"

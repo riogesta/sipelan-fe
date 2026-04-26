@@ -193,7 +193,7 @@ export function CategoryDialog({
                                 htmlFor="budget"
                                 className="text-right text-sm font-semibold text-muted-foreground"
                             >
-                                Budget
+                                <Target className="inline-block mr-1 h-3.5 w-3.5" /> Budget
                             </label>
                             <div className="col-span-3">
                                 <CurrencyInput

@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { login, register } from "@/lib/api"
 import { Button } from "@/components/ui/button"
-import { Loader2, GalleryVerticalEnd } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type AuthMode = "login" | "signup"
@@ -59,7 +59,7 @@ export function AuthPage({ onLoginSuccess }: { onLoginSuccess: () => void }) {
                 setUsername("")
                 setPassword("")
                 setConfirmPassword("")
-                alert("Akun berhasil dibuat! Silakan login.")
+                alert("Akun berhasil dibuat! Silakan tunggu aktivasi oleh administrator.")
             }
         } catch (err) {
             setError(err instanceof Error ? err.message : "Terjadi kesalahan")
@@ -85,30 +85,29 @@ export function AuthPage({ onLoginSuccess }: { onLoginSuccess: () => void }) {
         <div className="grid min-h-svh lg:grid-cols-2 fixed inset-0 w-full h-full bg-background z-50 overflow-y-auto lg:overflow-hidden">
             <div className="flex flex-col gap-4 p-6 md:p-10">
                 <div className="flex justify-center gap-2 md:justify-start">
-                    {/* ini di comment dulu jangan di ubah */}
-                    {/* <a href="#" className="flex items-center gap-2 font-medium">
-                        <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                            <GalleryVerticalEnd className="size-4" />
+                    <div className="flex items-center gap-2 font-bold text-xl text-primary">
+                        <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg">
+                            S
                         </div>
-                        SIPELAN Inc.
-                    </a> */}
+                        SIPELAN
+                    </div>
                 </div>
                 <div className="flex flex-1 items-center justify-center py-10">
                     <div className="w-full max-w-xs">
                         <form className={cn("flex flex-col gap-6")} onSubmit={handleSubmit}>
                             <div className="flex flex-col items-center gap-2 text-center">
-                                <h1 className="text-2xl font-bold">
-                                    {isLogin ? "Masuk ke akun anda" : "Buat akun baru"}
+                                <h1 className="text-3xl font-bold tracking-tight">
+                                    {isLogin ? "Selamat Datang" : "Buat Akun"}
                                 </h1>
                                 <p className="text-sm text-balance text-muted-foreground">
                                     {isLogin 
-                                        ? "Masukkan username anda di bawah untuk mengakses dashboard" 
-                                        : "Lengkapi form di bawah untuk mulai menggunakan SIPELAN"}
+                                        ? "Masukkan kredensial anda untuk masuk" 
+                                        : "Daftarkan diri anda untuk mulai mencatat keuangan"}
                                 </p>
                             </div>
                             
                             {error && (
-                                <div className="p-3 text-sm bg-destructive/10 text-destructive border border-destructive/20 rounded-md animate-in fade-in zoom-in-95 duration-200 font-medium">
+                                <div className="p-3 text-sm bg-destructive/10 text-destructive border border-destructive/20 rounded-xl animate-in fade-in zoom-in-95 duration-200 font-medium">
                                     {error}
                                 </div>
                             )}
@@ -118,7 +117,7 @@ export function AuthPage({ onLoginSuccess }: { onLoginSuccess: () => void }) {
                                     <label 
                                         htmlFor="username"
                                         className={cn(
-                                            "text-sm font-medium leading-none",
+                                            "text-sm font-semibold text-muted-foreground",
                                             errorFields.includes("username") && "text-destructive"
                                         )}
                                     >
@@ -131,30 +130,29 @@ export function AuthPage({ onLoginSuccess }: { onLoginSuccess: () => void }) {
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         className={cn(
-                                            "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all",
+                                            "flex h-11 w-full rounded-xl border border-input bg-muted/30 px-4 py-2 text-sm ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring shadow-none",
                                             errorFields.includes("username") && "border-destructive text-destructive bg-destructive/5"
                                         )}
                                     />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    {/* ini di comment dulu jangan di ubah */}
-                                    {/* <div className="flex items-center">
+                                    <div className="flex items-center justify-between">
                                         <label 
                                             htmlFor="password"
                                             className={cn(
-                                                "text-sm font-medium leading-none",
+                                                "text-sm font-semibold text-muted-foreground",
                                                 errorFields.includes("password") && "text-destructive"
                                             )}
                                         >
                                             Password
                                         </label>
                                         {isLogin && (
-                                            <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
+                                            <a href="#" className="text-xs font-medium text-primary hover:underline underline-offset-4">
                                                 Lupa password?
                                             </a>
                                         )}
-                                    </div> */}
+                                    </div>
                                     <input
                                         id="password"
                                         type="password"
@@ -162,7 +160,7 @@ export function AuthPage({ onLoginSuccess }: { onLoginSuccess: () => void }) {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         className={cn(
-                                            "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all",
+                                            "flex h-11 w-full rounded-xl border border-input bg-muted/30 px-4 py-2 text-sm ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring shadow-none",
                                             errorFields.includes("password") && "border-destructive text-destructive bg-destructive/5"
                                         )}
                                     />
@@ -173,7 +171,7 @@ export function AuthPage({ onLoginSuccess }: { onLoginSuccess: () => void }) {
                                         <label 
                                             htmlFor="confirmPassword"
                                             className={cn(
-                                                "text-sm font-medium leading-none",
+                                                "text-sm font-semibold text-muted-foreground",
                                                 errorFields.includes("confirmPassword") && "text-destructive"
                                             )}
                                         >
@@ -186,43 +184,43 @@ export function AuthPage({ onLoginSuccess }: { onLoginSuccess: () => void }) {
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             className={cn(
-                                                "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all",
+                                                "flex h-11 w-full rounded-xl border border-input bg-muted/30 px-4 py-2 text-sm ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring shadow-none",
                                                 errorFields.includes("confirmPassword") && "border-destructive text-destructive bg-destructive/5"
                                             )}
                                         />
                                     </div>
                                 )}
 
-                                <Button type="submit" className="w-full h-10" disabled={loading}>
+                                <Button type="submit" className="w-full h-11 rounded-xl text-base font-bold shadow-lg" disabled={loading}>
                                     {loading ? (
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    ) : isLogin ? "Login" : "Daftar Sekarang"}
+                                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                    ) : isLogin ? "Masuk Sekarang" : "Daftar Akun"}
                                 </Button>
                             </div>
 
                             <div className="text-center text-sm">
                                 {isLogin ? (
-                                    <>
+                                    <p className="text-muted-foreground">
                                         Belum punya akun?{" "}
                                         <button 
                                             type="button"
                                             onClick={() => setAuthMode("signup")}
-                                            className="underline underline-offset-4 font-semibold hover:text-primary transition-colors"
+                                            className="text-primary font-bold hover:underline underline-offset-4"
                                         >
-                                            Daftar sekarang
+                                            Daftar gratis
                                         </button>
-                                    </>
+                                    </p>
                                 ) : (
-                                    <>
+                                    <p className="text-muted-foreground">
                                         Sudah punya akun?{" "}
                                         <button 
                                             type="button"
                                             onClick={() => setAuthMode("login")}
-                                            className="underline underline-offset-4 font-semibold hover:text-primary transition-colors"
+                                            className="text-primary font-bold hover:underline underline-offset-4"
                                         >
-                                            Masuk kembali
+                                            Login kembali
                                         </button>
-                                    </>
+                                    </p>
                                 )}
                             </div>
                         </form>
@@ -236,12 +234,15 @@ export function AuthPage({ onLoginSuccess }: { onLoginSuccess: () => void }) {
                     alt="Auth Background"
                     className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.4] brightness-90 grayscale-[0.1] animate-in fade-in duration-1000"
                 />
-                <div className="absolute inset-0 bg-linear-to-t from-background/90 via-background/20 to-transparent flex items-end p-12">
-                    <div className="max-w-md space-y-2 animate-in slide-in-from-bottom-5 duration-700">
-                        <h3 className="text-3xl font-bold text-white tracking-tight">
+                <div className="absolute inset-0 bg-linear-to-t from-background/90 via-background/20 to-transparent flex items-end p-16">
+                    <div className="max-w-md space-y-4 animate-in slide-in-from-bottom-8 duration-700">
+                        <div className="inline-flex px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest">
+                            {isLogin ? "Sistem Pencatatan" : "Bergabunglah Sekarang"}
+                        </div>
+                        <h3 className="text-4xl font-black text-white tracking-tight leading-[1.1]">
                             {sidePanelData[mode].title}
                         </h3>
-                        <p className="text-white/80 text-lg leading-relaxed">
+                        <p className="text-white/80 text-xl leading-relaxed">
                             {sidePanelData[mode].description}
                         </p>
                     </div>

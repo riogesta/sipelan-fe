@@ -24,12 +24,11 @@ interface OverviewChartProps {
     type: "pemasukan" | "pengeluaran"
     data: ChartData[]
     loading: boolean
-    year?: number
     viewLabel?: string
     className?: string
 }
 
-export function OverviewChart({ type, data, loading, year, viewLabel, className }: OverviewChartProps) {
+export function OverviewChart({ type, data, loading, viewLabel, className }: OverviewChartProps) {
     if (loading) {
         return (
             <div className={cn("h-[180px] w-full flex items-center justify-center text-xs text-muted-foreground", className)}>

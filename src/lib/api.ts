@@ -92,7 +92,7 @@ export async function logout(): Promise<ApiResponse<null>> {
     localStorage.removeItem("sipelan-is-logged-in")
     localStorage.removeItem("sipelan-token")
     window.location.reload()
-    return { status: "success", message: "Logged out", data: null }
+    return { status: 200, message: "Logged out", data: null }
 }
 
 // ─── Categories ──────────────────────────────────────────────

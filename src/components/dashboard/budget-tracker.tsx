@@ -1,6 +1,5 @@
 import { Progress } from "@/components/ui/progress"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { useBudgets } from "@/hooks/use-api"
 import { formatRupiah } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { AlertCircle, CheckCircle2, TrendingUp, Info } from "lucide-react"
