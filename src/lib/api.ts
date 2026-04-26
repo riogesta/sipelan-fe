@@ -1,7 +1,10 @@
 import type {
     ApiResponse,
+    Budget,
+    BudgetUsage,
     Category,
     CategoryInput,
+    ChartData,
     MonthlySummary,
     OverallSummary,
     PaginatedResponse,
@@ -9,10 +12,8 @@ import type {
     TransactionInput,
 } from "./types"
 
-const API_URL = (
-    import.meta.env.VITE_API_URL || "http://localhost:8081"
-).replace(/\/$/, "")
-const API_BASE = `${API_URL}/api`
+const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:8081").replace(/\/$/, "")
+const API_BASE = "/api"
 
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const token = localStorage.getItem("sipelan-token")?.trim()
@@ -22,17 +23,15 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
         ...options?.headers,
     }
 
-    const res = await fetch(`${API_BASE}${endpoint}`, {
+    const res = await fetch(`${API_URL}${API_BASE}${endpoint}`, {
         ...options,
         headers,
     })
 
     if (res.status === 401) {
-        const hadToken = !!localStorage.getItem("sipelan-token")
+        localStorage.removeItem("sipelan-is-logged-in")
         localStorage.removeItem("sipelan-token")
-        if (hadToken) {
-            window.location.reload()
-        }
+        window.location.reload()
         throw new Error("Session expired. Please login again.")
     }
 
@@ -51,7 +50,7 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
 export async function login(
     username: string,
     password: string
-): Promise<ApiResponse<{ token: string }>> {
+): Promise<ApiResponse<{ token: string; person_id: number; username: string }>> {
     const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -66,6 +65,34 @@ export async function login(
     }
 
     return res.json()
+}
+
+export async function register(
+    username: string,
+    password: string
+): Promise<ApiResponse<null>> {
+    const res = await fetch(`${API_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+    })
+
+    if (!res.ok) {
+        const error = await res
+            .json()
+            .catch(() => ({ message: "Registration failed" }))
+        throw new Error(error.message || `HTTP ${res.status}`)
+    }
+
+    return res.json()
+}
+
+export async function logout(): Promise<ApiResponse<null>> {
+    // Just clear local state for dev simplicity
+    localStorage.removeItem("sipelan-is-logged-in")
+    localStorage.removeItem("sipelan-token")
+    window.location.reload()
+    return { status: "success", message: "Logged out", data: null }
 }
 
 // ─── Categories ──────────────────────────────────────────────
@@ -167,4 +194,37 @@ export async function getMonthlySummary(
 ): Promise<ApiResponse<MonthlySummary[]>> {
     const params = year ? `?year=${year}` : ""
     return request(`/summary/monthly${params}`)
+}
+
+export async function getChartData(
+    view: "daily" | "weekly" | "monthly",
+    year?: number
+): Promise<ApiResponse<ChartData[]>> {
+    const params = new URLSearchParams({ view })
+    if (year) params.append("year", year.toString())
+    return request(`/summary/chart?${params.toString()}`)
+}
+
+// ─── Budgets ──────────────────────────────────────────────────
+
+export async function setBudget(input: {
+    category_id: number
+    amount: number
+    month?: number
+    year?: number
+}): Promise<ApiResponse<Budget>> {
+    return request("/budgets", {
+        method: "POST",
+        body: JSON.stringify(input),
+    })
+}
+
+export async function getBudgetSummary(
+    month?: number,
+    year?: number
+): Promise<ApiResponse<BudgetUsage[]>> {
+    const params = new URLSearchParams()
+    if (month) params.append("month", month.toString())
+    if (year) params.append("year", year.toString())
+    return request(`/summary/budget?${params.toString()}`)
 }

@@ -4,6 +4,9 @@ import {
     getMonthlySummary,
     getSummary,
     getTransactions,
+    getChartData,
+    getBudgetSummary,
+    setBudget as apiSetBudget,
     createTransaction as apiCreateTransaction,
     updateTransaction as apiUpdateTransaction,
     deleteTransaction as apiDeleteTransaction,
@@ -17,6 +20,8 @@ import type {
     MonthlySummary,
     OverallSummary,
     Pagination,
+    ChartData,
+    BudgetUsage,
     Transaction,
     TransactionInput,
 } from "@/lib/types"
@@ -75,6 +80,71 @@ export function useMonthlySummary(year?: number, token?: string | null) {
     }, [fetchData])
 
     return { data, loading, error, refetch: fetchData }
+}
+
+// ─── useChartData ───────────────────────────────────────────
+
+export function useChartData(
+    view: "daily" | "weekly" | "monthly",
+    year?: number,
+    token?: string | null
+) {
+    const [data, setData] = useState<ChartData[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
+    const fetchData = useCallback(async () => {
+        if (!token) return
+        try {
+            setLoading(true)
+            setError(null)
+            const res = await getChartData(view, year)
+            setData(res.data)
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Failed to fetch chart data")
+        } finally {
+            setLoading(false)
+        }
+    }, [view, year, token])
+
+    useEffect(() => {
+        fetchData()
+    }, [fetchData])
+
+    return { data, loading, error, refetch: fetchData }
+}
+
+// ─── useBudgets ─────────────────────────────────────────────
+
+export function useBudgets(month?: number, year?: number, token?: string | null) {
+    const [budgets, setBudgets] = useState<BudgetUsage[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
+    const fetchBudgets = useCallback(async () => {
+        if (!token) return
+        try {
+            setLoading(true)
+            setError(null)
+            const res = await getBudgetSummary(month, year)
+            setBudgets(res.data ?? [])
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Failed to fetch budgets")
+        } finally {
+            setLoading(false)
+        }
+    }, [month, year, token])
+
+    useEffect(() => {
+        fetchBudgets()
+    }, [fetchBudgets])
+
+    const updateBudget = async (categoryId: number, amount: number) => {
+        await apiSetBudget({ category_id: categoryId, amount })
+        await fetchBudgets()
+    }
+
+    return { budgets, loading, error, refetch: fetchBudgets, updateBudget }
 }
 
 // ─── useTransactions ─────────────────────────────────────────

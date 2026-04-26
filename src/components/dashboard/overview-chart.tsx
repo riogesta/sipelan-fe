@@ -5,8 +5,9 @@ import {
     ChartTooltipContent,
     type ChartConfig,
 } from "@/components/ui/chart"
-import type { MonthlySummary } from "@/lib/types"
+import type { ChartData } from "@/lib/types"
 import { formatRupiah } from "@/lib/format"
+import { cn } from "@/lib/utils"
 
 const chartConfig = {
     pemasukan: {
@@ -21,15 +22,17 @@ const chartConfig = {
 
 interface OverviewChartProps {
     type: "pemasukan" | "pengeluaran"
-    data: MonthlySummary[]
+    data: ChartData[]
     loading: boolean
     year?: number
+    viewLabel?: string
+    className?: string
 }
 
-export function OverviewChart({ type, data, loading, year }: OverviewChartProps) {
+export function OverviewChart({ type, data, loading, year, viewLabel, className }: OverviewChartProps) {
     if (loading) {
         return (
-            <div className="h-[180px] w-full flex items-center justify-center text-xs text-muted-foreground">
+            <div className={cn("h-[180px] w-full flex items-center justify-center text-xs text-muted-foreground", className)}>
                 Memuat chart...
             </div>
         )
@@ -37,64 +40,71 @@ export function OverviewChart({ type, data, loading, year }: OverviewChartProps)
 
     if (!data || data.length === 0) {
         return (
-            <div className="h-[180px] w-full flex items-center justify-center text-xs text-muted-foreground">
-                Belum ada data bulanan
+            <div className={cn("h-[180px] w-full flex items-center justify-center text-xs text-muted-foreground", className)}>
+                Belum ada data {viewLabel?.toLowerCase() || "chart"}
             </div>
         )
     }
 
-    // Periksa apakah semua nilai untuk tipe ini (pemasukan / pengeluaran) adalah 0 di semua bulan
-    const hasData = data.some((item) => item[type] > 0)
+    // Periksa apakah semua nilai untuk tipe ini (pemasukan / pengeluaran) adalah 0
+    const hasData = data.some((item) => Number(item[type]) > 0)
 
     if (!hasData) {
         return (
-            <div className="h-[180px] w-full flex flex-col gap-2 items-center justify-center text-sm text-muted-foreground border-2 border-dashed rounded-lg mt-4">
+            <div className={cn("h-[180px] w-full flex flex-col gap-2 items-center justify-center text-sm text-muted-foreground border-2 border-dashed rounded-lg mt-4 px-4 text-center", className)}>
                 <p>Belum ada transaksi {type}</p>
-                <p className="text-xs opacity-60">di tahun {year}</p>
+                <p className="text-[10px] opacity-60 italic">Tampilan: {viewLabel || "Bulanan"}</p>
             </div>
         )
     }
 
+    // Sanitize data for Recharts (ensure no undefined/null values)
+    const chartData = data.map(item => ({
+        label: item.label || "",
+        pemasukan: Number(item.pemasukan) || 0,
+        pengeluaran: Number(item.pengeluaran) || 0,
+    }))
+
     return (
-        <ChartContainer config={chartConfig} className="h-[180px] w-full mt-4">
+        <ChartContainer config={chartConfig} className={cn("h-[200px] w-full mt-4", className)}>
             <AreaChart
-                data={data}
+                data={chartData}
                 margin={{
-                    left: 0,
-                    right: 15,
+                    left: 10,
+                    right: 10,
                     top: 10,
                     bottom: 0,
                 }}
             >
                 <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.3} />
                 <XAxis
-                    dataKey="month"
+                    dataKey="label"
                     tickLine={false}
                     axisLine={false}
                     tickMargin={10}
-                    tickFormatter={(value) => value.slice(0, 3)}
-                    style={{ fontSize: '11px', fill: 'var(--color-muted-foreground)' }}
+                    tickFormatter={(value) => value}
+                    style={{ fontSize: '10px', fill: 'var(--color-muted-foreground)' }}
                 />
                 <YAxis
                     tickLine={false}
                     axisLine={false}
-                    tickMargin={10}
-                    width={50}
+                    tickMargin={8}
+                    width={65}
                     tickFormatter={(value) =>
                         new Intl.NumberFormat("id-ID", {
                             notation: "compact",
+                            compactDisplay: "short",
                             maximumFractionDigits: 1,
                         }).format(value)
                     }
-                    style={{ fontSize: '11px', fill: 'var(--color-muted-foreground)' }}
-                    domain={[0, (dataMax: number) => (dataMax === 0 ? 1000 : dataMax)]}
+                    style={{ fontSize: '10px', fill: 'var(--color-muted-foreground)' }}
                 />
                 <ChartTooltip
                     cursor={false}
                     content={
                         <ChartTooltipContent 
                             indicator="dot" 
-                            labelFormatter={(label) => `${label} ${year || ""}`}
+                            labelFormatter={(label) => `${label}`}
                             formatter={(value, name, item) => (
                                 <>
                                     <div

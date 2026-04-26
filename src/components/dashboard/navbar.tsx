@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import { logout } from "@/lib/api"
 
 export type ViewType = "dashboard" | "transactions" | "categories" | "settings"
 
@@ -90,10 +91,7 @@ export function Navbar({ activeView, onViewChange }: NavbarProps) {
                             ))}
                             <div className="my-2 h-px bg-border" />
                             <button
-                                onClick={() => {
-                                    localStorage.removeItem("sipelan-token")
-                                    window.location.reload()
-                                }}
+                                onClick={() => logout()}
                                 className="inline-flex h-10 items-center justify-start rounded-md px-3 text-sm font-medium transition-colors hover:bg-destructive/10 hover:text-destructive text-foreground/80 cursor-pointer"
                             >
                                 <LogOut className="mr-2.5 h-4 w-4" />
@@ -127,10 +125,7 @@ export function Navbar({ activeView, onViewChange }: NavbarProps) {
                 <ThemeToggle />
                 
                 <button
-                    onClick={() => {
-                        localStorage.removeItem("sipelan-token")
-                        window.location.reload()
-                    }}
+                    onClick={() => logout()}
                     className="hidden md:inline-flex h-9 w-9 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ml-1"
                     title="Logout"
                 >

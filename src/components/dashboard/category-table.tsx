@@ -14,11 +14,13 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Trash2, Loader2, Edit2 } from "lucide-react"
-import type { Category } from "@/lib/types"
-import { formatDate } from "@/lib/format"
+import { Trash2, Loader2, Edit2, Target } from "lucide-react"
+import type { Category, BudgetUsage } from "@/lib/types"
+import { formatDate, formatRupiah } from "@/lib/format"
+import { cn } from "@/lib/utils"
 
 function createColumns(
+    budgets: BudgetUsage[],
     onEdit?: (category: Category) => void,
     onDelete?: (id: number) => void
 ): ColumnDef<Category>[] {
@@ -33,10 +35,35 @@ function createColumns(
             ),
         },
         {
+            id: "budget_info",
+            header: "Anggaran Bulanan",
+            cell: ({ row }) => {
+                const budget = budgets.find(b => b.category_id === row.original.id)
+                if (!budget || budget.amount === 0) return <span className="text-[10px] text-muted-foreground italic">Tidak diset</span>
+                
+                return (
+                    <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold">
+                            <Target className="h-3 w-3 text-primary" />
+                            {formatRupiah(budget.amount)}
+                        </div>
+                        {budget.used > 0 && (
+                            <span className={cn(
+                                "text-[9px]",
+                                budget.percentage > 100 ? "text-destructive font-bold" : "text-muted-foreground"
+                            )}>
+                                Terpakai: {Math.round(budget.percentage)}%
+                            </span>
+                        )}
+                    </div>
+                )
+            },
+        },
+        {
             accessorKey: "description",
             header: "Deskripsi",
             cell: ({ row }) => (
-                <div className="text-muted-foreground text-[11px] max-w-[300px] truncate">
+                <div className="text-muted-foreground text-[11px] max-w-[200px] truncate">
                     {row.original.description || "-"}
                 </div>
             ),
@@ -149,6 +176,7 @@ function DataTable({ columns, data }: DataTableProps) {
 
 interface CategoryTableProps {
     categories: Category[]
+    budgets: BudgetUsage[]
     loading: boolean
     onEdit?: (category: Category) => void
     onDelete?: (id: number) => void
@@ -156,11 +184,12 @@ interface CategoryTableProps {
 
 export function CategoryTable({
     categories,
+    budgets,
     loading,
     onEdit,
     onDelete,
 }: CategoryTableProps) {
-    const columns = createColumns(onEdit, onDelete)
+    const columns = createColumns(budgets, onEdit, onDelete)
 
     if (loading) {
         return (

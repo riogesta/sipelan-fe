@@ -11,10 +11,11 @@
 - **Base URL:** `http://localhost:8080/api`
 - **API Client:** Custom `request` wrapper in `src/lib/api.ts`.
 - **Token Management:**
-    - Token is stored in `localStorage` under the key `sipelan-token`.
-    - Token is automatically trimmed of whitespace before being sent in the `Authorization` header.
+    - Token is stored in a secure `HttpOnly` cookie named `token`.
+    - Client requests must include `credentials: 'include'`.
+    - A simple flag `sipelan-is-logged-in` is stored in `localStorage` to track session presence on the frontend.
 - **Auto-Logout/Redirect:**
-    - Any `401 Unauthorized` response from the backend triggers an automatic `localStorage.removeItem("sipelan-token")` and `window.location.reload()`.
+    - Any `401 Unauthorized` response from the backend triggers an automatic `localStorage.removeItem("sipelan-is-logged-in")` and `window.location.reload()`.
     - This ensures users are redirected to the login screen if their session expires or becomes invalid.
 
 ## Project Structure

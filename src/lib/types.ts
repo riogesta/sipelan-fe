@@ -37,6 +37,26 @@ export interface MonthlySummary {
     pengeluaran: number
 }
 
+export interface ChartData {
+    label: string
+    pemasukan: number
+    pengeluaran: number
+}
+
+export interface Budget {
+    id: number
+    category_id: number
+    category?: Category
+    amount: number
+    month: number
+    year: number
+}
+
+export interface BudgetUsage extends Budget {
+    used: number
+    percentage: number
+}
+
 export interface Pagination {
     page: number
     limit: number
