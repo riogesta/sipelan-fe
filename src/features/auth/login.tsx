@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { login, register } from "@/lib/api"
+import { login, register } from "@/services/api"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"

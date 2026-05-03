@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import { logout } from "@/lib/api"
+import { logout } from "@/services/api"
 
 export type ViewType = "dashboard" | "transactions" | "categories" | "settings"
 
@@ -31,7 +31,7 @@ function NavLink({
         <button
             onClick={onClick}
             className={cn(
-                "inline-flex h-9 items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors cursor-pointer",
+                "inline-flex h-9 items-center justify-center rounded-xl px-4 py-2 text-sm font-medium transition-colors cursor-pointer",
                 active 
                     ? "bg-primary text-primary-foreground shadow-sm" 
                     : "text-foreground/80 hover:bg-accent hover:text-accent-foreground",
@@ -64,16 +64,16 @@ export function Navbar({ activeView, onViewChange }: NavbarProps) {
     ] as const
 
     return (
-        <nav className="sticky top-0 z-50 flex h-14 items-center justify-between rounded-lg border bg-card/80 backdrop-blur-md px-4 mb-6 shadow-sm">
+        <nav className="sticky top-0 z-50 flex h-16 items-center justify-between rounded-2xl border border-white/20 bg-card/60 backdrop-blur-xl px-5 mb-8 shadow-lg shadow-black/5 dark:shadow-white/5">
             <div className="flex items-center gap-4">
                 <Sheet open={open} onOpenChange={setOpen}>
                     <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" className="md:hidden">
+                        <Button variant="ghost" size="icon" className="md:hidden rounded-xl">
                             <Menu className="h-5 w-5" />
                             <span className="sr-only">Toggle menu</span>
                         </Button>
                     </SheetTrigger>
-                <SheetContent side="left" className="w-[240px] sm:w-[280px] p-4">
+                <SheetContent side="left" className="w-[240px] sm:w-[280px] p-4 rounded-r-xl">
                         <SheetHeader className="mb-4">
                             <SheetTitle className="text-left text-base">Sipelan Menu</SheetTitle>
                         </SheetHeader>
@@ -92,7 +92,7 @@ export function Navbar({ activeView, onViewChange }: NavbarProps) {
                             <div className="my-2 h-px bg-border" />
                             <button
                                 onClick={() => logout()}
-                                className="inline-flex h-10 items-center justify-start rounded-md px-3 text-sm font-medium transition-colors hover:bg-destructive/10 hover:text-destructive text-foreground/80 cursor-pointer"
+                                className="inline-flex h-10 items-center justify-start rounded-xl px-3 text-sm font-medium transition-colors hover:bg-destructive/10 hover:text-destructive text-foreground/80 cursor-pointer"
                             >
                                 <LogOut className="mr-2.5 h-4 w-4" />
                                 Keluar
@@ -126,7 +126,7 @@ export function Navbar({ activeView, onViewChange }: NavbarProps) {
                 
                 <button
                     onClick={() => logout()}
-                    className="hidden md:inline-flex h-9 w-9 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ml-1"
+                    className="hidden md:inline-flex h-9 w-9 items-center justify-center rounded-xl text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ml-1"
                     title="Logout"
                 >
                     <LogOut className="h-4 w-4" />

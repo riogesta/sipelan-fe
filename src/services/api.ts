@@ -5,12 +5,13 @@ import type {
     Category,
     CategoryInput,
     ChartData,
+    CategorySummary,
     MonthlySummary,
     OverallSummary,
     PaginatedResponse,
     Transaction,
     TransactionInput,
-} from "./types"
+} from "@/lib/types"
 
 const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:8081").replace(/\/$/, "")
 const API_BASE = "/api"
@@ -140,13 +141,24 @@ export async function deleteCategory(id: number): Promise<ApiResponse<null>> {
 export async function getTransactions(
     page = 1,
     limit = 10,
-    type?: "pemasukan" | "pengeluaran"
+    filters?: {
+        type?: "pemasukan" | "pengeluaran"
+        start_date?: string
+        end_date?: string
+        search?: string
+        category_id?: number
+    }
 ): Promise<PaginatedResponse<Transaction>> {
     const params = new URLSearchParams({
         page: String(page),
         limit: String(limit),
     })
-    if (type) params.set("type", type)
+    if (filters?.type) params.set("type", filters.type)
+    if (filters?.start_date) params.set("start_date", filters.start_date)
+    if (filters?.end_date) params.set("end_date", filters.end_date)
+    if (filters?.search) params.set("search", filters.search)
+    if (filters?.category_id) params.set("category_id", String(filters.category_id))
+
     return request(`/transactions?${params}`)
 }
 
@@ -183,6 +195,40 @@ export async function deleteTransaction(
     })
 }
 
+// ─── Upload ──────────────────────────────────────────────────
+
+export async function uploadFile(
+    file: File
+): Promise<ApiResponse<{ url: string }>> {
+    const formData = new FormData()
+    formData.append("file", file)
+
+    const token = localStorage.getItem("sipelan-token")?.trim()
+    const res = await fetch(`${API_URL}${API_BASE}/upload`, {
+        method: "POST",
+        headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: formData,
+    })
+
+    if (res.status === 401) {
+        localStorage.removeItem("sipelan-is-logged-in")
+        localStorage.removeItem("sipelan-token")
+        window.location.reload()
+        throw new Error("Session expired. Please login again.")
+    }
+
+    if (!res.ok) {
+        const error = await res
+            .json()
+            .catch(() => ({ message: "Upload failed" }))
+        throw new Error(error.message || `HTTP ${res.status}`)
+    }
+
+    return res.json()
+}
+
 // ─── Summary / Dashboard ────────────────────────────────────
 
 export async function getSummary(): Promise<ApiResponse<OverallSummary>> {
@@ -203,6 +249,10 @@ export async function getChartData(
     const params = new URLSearchParams({ view })
     if (year) params.append("year", year.toString())
     return request(`/summary/chart?${params.toString()}`)
+}
+
+export async function getCategorySummary(): Promise<ApiResponse<CategorySummary[]>> {
+    return request("/summary/categories")
 }
 
 // ─── Budgets ──────────────────────────────────────────────────

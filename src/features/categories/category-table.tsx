@@ -29,7 +29,7 @@ function createColumns(
             accessorKey: "name",
             header: "Nama Kategori",
             cell: ({ row }) => (
-                <div className="font-semibold text-xs text-foreground">
+                <div className="font-semibold text-sm text-foreground">
                     {row.original.name}
                 </div>
             ),
@@ -39,17 +39,17 @@ function createColumns(
             header: "Anggaran Bulanan",
             cell: ({ row }) => {
                 const budget = budgets.find(b => b.category_id === row.original.id)
-                if (!budget || budget.amount === 0) return <span className="text-[10px] text-muted-foreground italic">Tidak diset</span>
+                if (!budget || budget.amount === 0) return <span className="text-xs text-muted-foreground italic">Tidak diset</span>
                 
                 return (
                     <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold">
+                        <div className="flex items-center gap-1.5 font-mono text-xs font-bold">
                             <Target className="h-3 w-3 text-primary" />
                             {formatRupiah(budget.amount)}
                         </div>
                         {budget.used > 0 && (
                             <span className={cn(
-                                "text-[9px]",
+                                "text-[10px] sm:text-xs",
                                 budget.percentage > 100 ? "text-destructive font-bold" : "text-muted-foreground"
                             )}>
                                 Terpakai: {Math.round(budget.percentage)}%
@@ -63,7 +63,7 @@ function createColumns(
             accessorKey: "description",
             header: "Deskripsi",
             cell: ({ row }) => (
-                <div className="text-muted-foreground text-[11px] max-w-[200px] truncate">
+                <div className="text-muted-foreground text-xs max-w-[200px] truncate">
                     {row.original.description || "-"}
                 </div>
             ),
@@ -117,7 +117,7 @@ function DataTable({ columns, data }: DataTableProps) {
     })
 
     return (
-        <div className="rounded-lg border bg-card shadow-sm overflow-hidden">
+        <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
             <Table>
                 <TableHeader className="bg-muted/50">
                     {table.getHeaderGroups().map((headerGroup) => (

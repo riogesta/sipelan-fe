@@ -1,3 +1,5 @@
+import { z } from "zod"
+
 // Types matching the Go backend models
 
 export interface Category {
@@ -8,7 +10,6 @@ export interface Category {
     name: string
     description: string
 }
-
 
 export interface Transaction {
     id: number
@@ -35,6 +36,11 @@ export interface MonthlySummary {
     year: number
     pemasukan: number
     pengeluaran: number
+}
+
+export interface CategorySummary {
+    name: string
+    value: number
 }
 
 export interface ChartData {
@@ -78,17 +84,20 @@ export interface PaginatedResponse<T> {
 }
 
 // Input types for creating/updating
-export interface CategoryInput {
-    name: string
-    description: string
-}
+export const categorySchema = z.object({
+    name: z.string().min(1, "Nama kategori wajib diisi"),
+    description: z.string(),
+})
 
+export type CategoryInput = z.infer<typeof categorySchema>
 
-export interface TransactionInput {
-    date: string
-    category_id: number
-    description: string
-    total: number
-    type: "pemasukan" | "pengeluaran"
-    attachment?: string
-}
+export const transactionSchema = z.object({
+    date: z.string().min(1, "Tanggal wajib diisi"),
+    category_id: z.number().min(1, "Kategori wajib dipilih"),
+    description: z.string().min(1, "Deskripsi wajib diisi"),
+    total: z.number().gt(0, "Total harus lebih dari 0"),
+    type: z.enum(["pemasukan", "pengeluaran"]),
+    attachment: z.string(),
+})
+
+export type TransactionInput = z.infer<typeof transactionSchema>

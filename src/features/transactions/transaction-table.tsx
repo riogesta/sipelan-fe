@@ -22,11 +22,12 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination"
 import { Button } from "@/components/ui/button"
-import { Trash2, Loader2 } from "lucide-react"
+import { Trash2, Edit2 } from "lucide-react"
 import type { Transaction, Pagination as PaginationType } from "@/lib/types"
 import { formatRupiah, formatDate } from "@/lib/format"
 
 function createColumns(
+    onEdit?: (transaction: Transaction) => void,
     onDelete?: (id: number) => void
 ): ColumnDef<Transaction>[] {
     return [
@@ -43,7 +44,7 @@ function createColumns(
             accessorKey: "category",
             header: "Kategori",
             cell: ({ row }) => (
-                <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium">
+                <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium">
                     {row.original.category?.name ?? "-"}
                 </span>
             ),
@@ -55,7 +56,7 @@ function createColumns(
                 const type = row.original.type
                 return (
                     <span
-                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold transition-colors ${
+                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold transition-colors ${
                             type === "pemasukan"
                                 ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300"
                                 : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
@@ -73,7 +74,7 @@ function createColumns(
                 const type = row.original.type
                 return (
                     <div
-                        className={`font-semibold text-xs ${
+                        className={`font-semibold text-sm ${
                             type === "pemasukan"
                                 ? "text-emerald-600"
                                 : "text-red-600"
@@ -85,20 +86,34 @@ function createColumns(
                 )
             },
         },
-        ...(onDelete
+        ...(onEdit || onDelete
             ? [
                   {
                       id: "actions",
                       header: "",
                       cell: ({ row }: { row: { original: Transaction } }) => (
-                          <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                              onClick={() => onDelete(row.original.id)}
-                          >
-                              <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <div className="flex justify-end gap-2">
+                              {onEdit && (
+                                  <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8 text-muted-foreground hover:text-primary"
+                                      onClick={() => onEdit(row.original)}
+                                  >
+                                      <Edit2 className="h-4 w-4" />
+                                  </Button>
+                              )}
+                              {onDelete && (
+                                  <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                      onClick={() => onDelete(row.original.id)}
+                                  >
+                                      <Trash2 className="h-4 w-4" />
+                                  </Button>
+                              )}
+                          </div>
                       ),
                   } as ColumnDef<Transaction>,
               ]
@@ -119,7 +134,7 @@ function DataTable({ columns, data }: DataTableProps) {
     })
 
     return (
-        <div className="rounded-lg border bg-card shadow-sm overflow-hidden">
+        <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
             <Table>
                 <TableHeader className="bg-muted/50">
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -181,25 +196,59 @@ interface TransactionTableProps {
     loading: boolean
     pagination?: PaginationType | null
     onPageChange?: (page: number) => void
+    onEdit?: (transaction: Transaction) => void
     onDelete?: (id: number) => void
 }
+
+import { Skeleton } from "@/components/shared/skeleton"
+
+import { TransactionCard } from "./transaction-card"
 
 export function TransactionTable({
     transactions,
     loading,
     pagination,
     onPageChange,
+    onEdit,
     onDelete,
 }: TransactionTableProps) {
-    const columns = createColumns(onDelete)
+    const columns = createColumns(onEdit, onDelete)
 
     if (loading) {
         return (
-            <div className="w-full flex items-center justify-center py-12">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                <span className="ml-2 text-muted-foreground">
-                    Memuat transaksi...
-                </span>
+            <div className="w-full space-y-3">
+                <div className="flex justify-between items-center">
+                    <Skeleton className="h-5 w-32 mx-1" />
+                </div>
+                {/* Skeleton for Desktop */}
+                <div className="hidden md:block rounded-xl border bg-card shadow-sm overflow-hidden">
+                    <div className="h-10 bg-muted/50 border-b flex items-center px-4 gap-4">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <Skeleton key={i} className="h-4 flex-1" />
+                        ))}
+                    </div>
+                    {Array.from({ length: 5 }).map((_, i) => (
+                        <div key={i} className="h-14 border-b flex items-center px-4 gap-4">
+                            {Array.from({ length: 5 }).map((_, j) => (
+                                <Skeleton key={j} className="h-4 flex-1" />
+                            ))}
+                        </div>
+                    ))}
+                </div>
+                {/* Skeleton for Mobile */}
+                <div className="md:hidden space-y-3">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="bg-card p-4 rounded-xl border-none shadow-sm space-y-3">
+                            <div className="flex items-center gap-4">
+                                <Skeleton className="h-10 w-10 rounded-2xl" />
+                                <div className="flex-1 space-y-2">
+                                    <Skeleton className="h-4 w-3/4" />
+                                    <Skeleton className="h-3 w-1/2" />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         )
     }
@@ -209,10 +258,32 @@ export function TransactionTable({
 
     return (
         <div className="w-full space-y-3">
-            <h2 className="text-sm font-bold mx-1 text-foreground uppercase tracking-wider opacity-80">
+            <h2 className="text-xs font-bold mx-1 text-muted-foreground uppercase tracking-widest opacity-80">
                 Riwayat Transaksi
             </h2>
-            <DataTable columns={columns} data={transactions} />
+            
+            {/* Desktop View */}
+            <div className="hidden md:block">
+                <DataTable columns={columns} data={transactions} />
+            </div>
+
+            {/* Mobile View */}
+            <div className="md:hidden flex flex-col gap-3">
+                {transactions.length > 0 ? (
+                    transactions.map((tx) => (
+                        <TransactionCard 
+                            key={tx.id} 
+                            transaction={tx} 
+                            onEdit={onEdit} 
+                            onDelete={onDelete} 
+                        />
+                    ))
+                ) : (
+                    <div className="bg-card border-2 border-dashed rounded-xl p-8 text-center text-sm text-muted-foreground">
+                        Belum ada data transaksi.
+                    </div>
+                )}
+            </div>
             
             {totalPages > 1 && onPageChange && (
                 <div className="flex justify-center mt-4">

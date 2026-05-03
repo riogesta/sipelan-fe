@@ -28,11 +28,26 @@ interface OverviewChartProps {
     className?: string
 }
 
+import { Skeleton } from "@/components/shared/skeleton"
+
 export function OverviewChart({ type, data, loading, viewLabel, className }: OverviewChartProps) {
     if (loading) {
         return (
-            <div className={cn("h-[180px] w-full flex items-center justify-center text-xs text-muted-foreground", className)}>
-                Memuat chart...
+            <div className={cn("h-[180px] w-full flex flex-col gap-3 p-4 justify-end mt-4", className)}>
+                <div className="flex items-end gap-2 h-full">
+                    {Array.from({ length: 12 }).map((_, i) => (
+                        <Skeleton 
+                            key={i} 
+                            className="flex-1 rounded-t-sm" 
+                            style={{ height: `${Math.floor(Math.random() * 60) + 20}%` }} 
+                        />
+                    ))}
+                </div>
+                <div className="flex justify-between border-t pt-2">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <Skeleton key={i} className="h-3 w-8" />
+                    ))}
+                </div>
             </div>
         )
     }
@@ -51,8 +66,8 @@ export function OverviewChart({ type, data, loading, viewLabel, className }: Ove
     if (!hasData) {
         return (
             <div className={cn("h-[180px] w-full flex flex-col gap-2 items-center justify-center text-sm text-muted-foreground border-2 border-dashed rounded-lg mt-4 px-4 text-center", className)}>
-                <p>Belum ada transaksi {type}</p>
-                <p className="text-[10px] opacity-60 italic">Tampilan: {viewLabel || "Bulanan"}</p>
+                <p className="font-medium">Belum ada transaksi {type}</p>
+                <p className="text-xs opacity-60 italic">Tampilan: {viewLabel || "Bulanan"}</p>
             </div>
         )
     }
@@ -82,7 +97,7 @@ export function OverviewChart({ type, data, loading, viewLabel, className }: Ove
                     axisLine={false}
                     tickMargin={10}
                     tickFormatter={(value) => value}
-                    style={{ fontSize: '10px', fill: 'var(--color-muted-foreground)' }}
+                    style={{ fontSize: '11px', fontWeight: 500, fill: 'var(--color-muted-foreground)' }}
                 />
                 <YAxis
                     tickLine={false}
@@ -96,7 +111,7 @@ export function OverviewChart({ type, data, loading, viewLabel, className }: Ove
                             maximumFractionDigits: 1,
                         }).format(value)
                     }
-                    style={{ fontSize: '10px', fill: 'var(--color-muted-foreground)' }}
+                    style={{ fontSize: '11px', fontWeight: 500, fill: 'var(--color-muted-foreground)' }}
                 />
                 <ChartTooltip
                     cursor={false}

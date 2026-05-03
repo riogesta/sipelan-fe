@@ -25,14 +25,14 @@ export function BudgetTracker({ budgets, loading }: BudgetTrackerProps) {
     if (activeBudgets.length === 0) return null
 
     return (
-        <Card className="p-4 flex flex-col h-full mt-6 shadow-none">
+        <Card className="p-4 flex flex-col h-full mt-6 shadow-smb rounded-xl">
             <CardHeader className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 p-0 pb-4 border-b">
                 <div className="flex-1 grid gap-0.5 text-left">
                     <div className="flex items-center gap-2">
                         <TrendingUp className="h-4 w-4 text-primary" />
                         <CardTitle className="text-sm sm:text-base font-bold">Pantauan Anggaran Bulanan</CardTitle>
                     </div>
-                    <CardDescription className="text-[10px] sm:text-xs leading-tight">
+                    <CardDescription className="text-xs leading-tight">
                         Kelola pengeluaran berdasarkan target kategori yang sudah kamu tentukan.
                     </CardDescription>
                 </div>
@@ -42,7 +42,7 @@ export function BudgetTracker({ budgets, loading }: BudgetTrackerProps) {
                             <TooltipTrigger asChild>
                                 <div className="flex items-center gap-1.5 cursor-help text-muted-foreground hover:text-foreground transition-colors">
                                     <Info className="h-3.5 w-3.5" />
-                                    <span className="text-[10px] font-medium uppercase tracking-widest opacity-70">Info Sesi</span>
+                                    <span className="text-[10px] sm:text-xs font-medium uppercase tracking-widest opacity-70">Info Sesi</span>
                                 </div>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -61,7 +61,7 @@ export function BudgetTracker({ budgets, loading }: BudgetTrackerProps) {
                         <div key={budget.id} className="space-y-2.5">
                             <div className="flex justify-between items-end">
                                 <div className="flex flex-col gap-0.5">
-                                    <span className="text-xs font-bold flex items-center gap-2">
+                                    <span className="text-sm font-bold flex items-center gap-2">
                                         {budget.category?.name}
                                         
                                         <TooltipProvider>
@@ -87,7 +87,7 @@ export function BudgetTracker({ budgets, loading }: BudgetTrackerProps) {
                                             )}
                                         </TooltipProvider>
                                     </span>
-                                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                         <span className="font-medium text-foreground">{formatRupiah(budget.used)}</span>
                                         <span>/</span>
                                         <span>{formatRupiah(budget.amount)}</span>
@@ -114,7 +114,7 @@ export function BudgetTracker({ budgets, loading }: BudgetTrackerProps) {
                                 />
                             </div>
                             {isOver && (
-                                <div className="flex items-center gap-1.5 text-[10px] text-destructive bg-destructive/5 p-2 rounded-lg border border-destructive/10">
+                                <div className="flex items-center gap-1.5 text-xs text-destructive bg-destructive/5 p-2 rounded-lg border border-destructive/10">
                                     <AlertCircle className="h-3 w-3" />
                                     <span>Melebihi anggaran sebesar <strong>{formatRupiah(budget.used - budget.amount)}</strong></span>
                                 </div>
