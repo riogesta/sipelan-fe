@@ -20,7 +20,7 @@ export function TransactionCard({
 
     return (
         <Card className="overflow-hidden border-none shadow-sm bg-card hover:bg-accent/5 transition-colors">
-            <CardContent className="p-4">
+            <CardContent>
                 <div className="flex items-center gap-4">
                     <div className={cn(
                         "p-2.5 rounded-2xl shrink-0",

@@ -36,7 +36,7 @@ export function BalanceCard({
             {/* Background pattern/glow */}
             <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-500" />
             
-            <CardContent className="p-6 relative z-10">
+            <CardContent className="relative z-10">
                 <div className="flex justify-between items-start">
                     <div className="space-y-1">
                         <p className="text-white/70 text-xs font-medium uppercase tracking-widest flex items-center gap-1.5">
