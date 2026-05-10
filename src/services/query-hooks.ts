@@ -8,7 +8,9 @@ import {
     getChartData,
     getCategorySummary,
     getBudgetSummary,
+    getMonthlyTarget,
     setBudget as apiSetBudget,
+    setMonthlyTarget as apiSetMonthlyTarget,
     createTransaction as apiCreateTransaction,
     updateTransaction as apiUpdateTransaction,
     deleteTransaction as apiDeleteTransaction,
@@ -24,11 +26,11 @@ import type {
 
 // ─── useSummary ──────────────────────────────────────────────
 
-export function useSummary(enabled = true) {
+export function useSummary(startDate?: string, endDate?: string, enabled = true) {
     return useQuery({
-        queryKey: ["summary"],
+        queryKey: ["summary", startDate, endDate],
         queryFn: async () => {
-            const res = await getSummary()
+            const res = await getSummary(startDate, endDate)
             return res.data
         },
         enabled,
@@ -51,14 +53,16 @@ export function useMonthlySummary(year?: number, enabled = true) {
 // ─── useChartData ───────────────────────────────────────────
 
 export function useChartData(
-    view: "daily" | "weekly" | "monthly",
+    view: string,
+    startDate?: string,
+    endDate?: string,
     year?: number,
     enabled = true
 ) {
     return useQuery({
-        queryKey: ["summary", "chart", view, year],
+        queryKey: ["summary", "chart", view, startDate, endDate, year],
         queryFn: async () => {
-            const res = await getChartData(view, year)
+            const res = await getChartData(view, startDate, endDate, year)
             return res.data
         },
         enabled,
@@ -86,6 +90,19 @@ export function useBudgets(month?: number, year?: number, enabled = true) {
         queryFn: async () => {
             const res = await getBudgetSummary(month, year)
             return res.data ?? []
+        },
+        enabled,
+    })
+}
+
+// ─── useMonthlyTarget ───────────────────────────────────────
+
+export function useMonthlyTarget(month?: number, year?: number, enabled = true) {
+    return useQuery({
+        queryKey: ["summary", "monthly-target", month, year],
+        queryFn: async () => {
+            const res = await getMonthlyTarget(month, year)
+            return res.data
         },
         enabled,
     })
@@ -238,6 +255,21 @@ export function useBudgetMutation() {
         },
         onError: (err: Error) => {
             toast.error("Gagal memperbarui budget: " + err.message)
+        },
+    })
+}
+
+export function useMonthlyTargetMutation() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: apiSetMonthlyTarget,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["summary", "monthly-target"] })
+            toast.success("Target bulanan berhasil diperbarui")
+        },
+        onError: (err: Error) => {
+            toast.error("Gagal memperbarui target: " + err.message)
         },
     })
 }

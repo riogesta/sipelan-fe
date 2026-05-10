@@ -11,6 +11,7 @@ import type {
     PaginatedResponse,
     Transaction,
     TransactionInput,
+    MonthlyTarget,
 } from "@/lib/types"
 
 const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:8081").replace(/\/$/, "")
@@ -231,8 +232,12 @@ export async function uploadFile(
 
 // ─── Summary / Dashboard ────────────────────────────────────
 
-export async function getSummary(): Promise<ApiResponse<OverallSummary>> {
-    return request("/summary")
+export async function getSummary(startDate?: string, endDate?: string): Promise<ApiResponse<OverallSummary>> {
+    const params = new URLSearchParams()
+    if (startDate) params.set("start_date", startDate)
+    if (endDate) params.set("end_date", endDate)
+    const queryString = params.toString() ? `?${params.toString()}` : ""
+    return request(`/summary${queryString}`)
 }
 
 export async function getMonthlySummary(
@@ -243,10 +248,14 @@ export async function getMonthlySummary(
 }
 
 export async function getChartData(
-    view: "daily" | "weekly" | "monthly",
+    view: string,
+    startDate?: string,
+    endDate?: string,
     year?: number
 ): Promise<ApiResponse<ChartData[]>> {
     const params = new URLSearchParams({ view })
+    if (startDate) params.set("start_date", startDate)
+    if (endDate) params.set("end_date", endDate)
     if (year) params.append("year", year.toString())
     return request(`/summary/chart?${params.toString()}`)
 }
@@ -277,4 +286,27 @@ export async function getBudgetSummary(
     if (month) params.append("month", month.toString())
     if (year) params.append("year", year.toString())
     return request(`/summary/budget?${params.toString()}`)
+}
+
+// ─── Monthly Targets ──────────────────────────────────────────
+
+export async function getMonthlyTarget(
+    month?: number,
+    year?: number
+): Promise<ApiResponse<MonthlyTarget>> {
+    const params = new URLSearchParams()
+    if (month) params.append("month", month.toString())
+    if (year) params.append("year", year.toString())
+    return request(`/monthly-targets?${params.toString()}`)
+}
+
+export async function setMonthlyTarget(input: {
+    amount: number
+    month?: number
+    year?: number
+}): Promise<ApiResponse<MonthlyTarget>> {
+    return request("/monthly-targets", {
+        method: "POST",
+        body: JSON.stringify(input),
+    })
 }

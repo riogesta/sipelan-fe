@@ -16,13 +16,15 @@ import {
 import { Button } from "@/components/ui/button"
 import { Trash2, Loader2, Edit2, Target } from "lucide-react"
 import type { Category, BudgetUsage } from "@/lib/types"
-import { formatDate, formatRupiah } from "@/lib/format"
+import { formatDate, formatPrivacy } from "@/lib/format"
 import { cn } from "@/lib/utils"
+import { useUIStore } from "@/store/ui-store"
 
 function createColumns(
     budgets: BudgetUsage[],
     onEdit?: (category: Category) => void,
-    onDelete?: (id: number) => void
+    onDelete?: (id: number) => void,
+    isPrivacy: boolean = false
 ): ColumnDef<Category>[] {
     return [
         {
@@ -45,7 +47,7 @@ function createColumns(
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-1.5 font-mono text-xs font-bold">
                             <Target className="h-3 w-3 text-primary" />
-                            {formatRupiah(budget.amount)}
+                            {formatPrivacy(budget.amount, isPrivacy)}
                         </div>
                         {budget.used > 0 && (
                             <span className={cn(
@@ -189,7 +191,8 @@ export function CategoryTable({
     onEdit,
     onDelete,
 }: CategoryTableProps) {
-    const columns = createColumns(budgets, onEdit, onDelete)
+    const { privacyMode } = useUIStore()
+    const columns = createColumns(budgets, onEdit, onDelete, privacyMode)
 
     if (loading) {
         return (

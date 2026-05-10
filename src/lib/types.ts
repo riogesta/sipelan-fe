@@ -63,6 +63,13 @@ export interface BudgetUsage extends Budget {
     percentage: number
 }
 
+export interface MonthlyTarget {
+    id: number
+    amount: number
+    month: number
+    year: number
+}
+
 export interface Pagination {
     page: number
     limit: number

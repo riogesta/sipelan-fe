@@ -11,7 +11,10 @@ import { AuthPage } from "@/features/auth/login"
 import { Navbar, type ViewType } from "@/components/layout/navbar"
 import { PageHeader } from "@/components/layout/page-header"
 import { BalanceCard } from "@/features/dashboard/balance-card"
-import { CategoryDonutChart } from "@/features/dashboard/category-donut-chart"
+import { MonthlyTargetCard } from "@/features/dashboard/monthly-target-card"
+import { CategoryDistributionCards } from "@/features/dashboard/category-distribution-cards"
+import { ConfirmDialog } from "@/components/shared/confirm-dialog"
+import { DashboardFilterBar } from "@/features/dashboard/dashboard-filter-bar"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
     useSummary, 
@@ -23,40 +26,24 @@ import {
     useTransactionMutations,
     useCategoryMutations
 } from "@/services/query-hooks"
-import { formatRupiah } from "@/lib/format"
-import { Settings2 } from "lucide-react"
+import { formatPrivacy } from "@/lib/format"
 import { Button } from "@/components/ui/button"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-    DialogFooter,
-    DialogClose,
-} from "@/components/ui/dialog"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { openTransactionDialog, openCategoryDialog } from "@/store/ui-store"
+import { openTransactionDialog, openCategoryDialog, useUIStore } from "@/store/ui-store"
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!localStorage.getItem("sipelan-is-logged-in"))
     const [currentView, setCurrentView] = useState<ViewType>("dashboard")
-    const [chartView, setChartView] = useState<"daily" | "weekly" | "monthly">("monthly")
     
     const [txPage, setTxPage] = useState(1)
     const currentYear = new Date().getFullYear()
 
+    const { privacyMode, dashboardFilter } = useUIStore()
+    const { view, startDate, endDate } = dashboardFilter
+
     // Queries
-    const { data: summary } = useSummary(isLoggedIn)
+    const { data: summary } = useSummary(startDate, endDate, isLoggedIn)
     const { data: categorySummary, isLoading: categorySummaryLoading } = useCategorySummary(isLoggedIn)
-    const { data: chartData, isLoading: chartLoading } = useChartData(chartView, currentYear, isLoggedIn)
+    const { data: chartData, isLoading: chartLoading } = useChartData(view, startDate, endDate, currentYear, isLoggedIn)
     const { data: budgets, isLoading: budgetsLoading } = useBudgets(undefined, undefined, isLoggedIn)
     
     const {
@@ -78,16 +65,40 @@ function App() {
     const { removeTransaction } = useTransactionMutations()
     const { removeCategory } = useCategoryMutations()
 
-    const handleDeleteTransaction = async (id: number) => {
-        if (confirm("Apakah anda yakin ingin menghapus transaksi ini?")) {
-            await removeTransaction.mutateAsync(id)
-        }
+    const [confirmDialog, setConfirmDialog] = useState<{
+        isOpen: boolean;
+        title: string;
+        description: string;
+        onConfirm: () => void;
+    }>({
+        isOpen: false,
+        title: "",
+        description: "",
+        onConfirm: () => {},
+    })
+
+    const handleDeleteTransaction = (id: number) => {
+        setConfirmDialog({
+            isOpen: true,
+            title: "Hapus Transaksi",
+            description: "Apakah anda yakin ingin menghapus transaksi ini?",
+            onConfirm: async () => {
+                await removeTransaction.mutateAsync(id)
+                setConfirmDialog((s) => ({ ...s, isOpen: false }))
+            }
+        })
     }
 
-    const handleDeleteCategory = async (id: number) => {
-        if (confirm("Menghapus kategori mungkin akan berdampak pada data transaksi yang menggunakan kategori ini. Lanjutkan?")) {
-            await removeCategory.mutateAsync(id)
-        }
+    const handleDeleteCategory = (id: number) => {
+        setConfirmDialog({
+            isOpen: true,
+            title: "Hapus Kategori",
+            description: "Menghapus kategori mungkin akan berdampak pada data transaksi yang menggunakan kategori ini. Lanjutkan?",
+            onConfirm: async () => {
+                await removeCategory.mutateAsync(id)
+                setConfirmDialog((s) => ({ ...s, isOpen: false }))
+            }
+        })
     }
 
     const renderDashboard = () => (
@@ -95,45 +106,9 @@ function App() {
             <PageHeader 
                 title="Dashboard Overview"
                 description="Analisa data keuangan anda dalam satu tampilan"
-                action={
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 gap-2">
-                                <Settings2 className="h-3.5 w-3.5" />
-                                <span>Tampilan: {chartView === 'daily' ? 'Harian' : chartView === 'weekly' ? 'Mingguan' : 'Bulanan'}</span>
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[400px] rounded-xl">
-                            <DialogHeader>
-                                <DialogTitle>Pengaturan Chart</DialogTitle>
-                                <DialogDescription>Pilih bagaimana data chart ditampilkan.</DialogDescription>
-                            </DialogHeader>
-                            <div className="p-8 pt-2 pb-8">
-                                <Select 
-                                    value={chartView} 
-                                    onValueChange={(v: any) => setChartView(v)}
-                                >
-                                    <SelectTrigger className="h-11 rounded-xl shadow-none">
-                                        <SelectValue placeholder="Pilih Tampilan" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="daily">Harian (Bulan Ini)</SelectItem>
-                                        <SelectItem value="weekly">Mingguan (7 Hari Terakhir)</SelectItem>
-                                        <SelectItem value="monthly">Bulanan ({currentYear})</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <DialogFooter>
-                                <DialogClose asChild>
-                                    <Button variant="default" className="px-8">
-                                        Selesai
-                                    </Button>
-                                </DialogClose>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
-                }
             />
+
+            <DashboardFilterBar />
 
             <BalanceCard 
                 totalIncome={summary?.total_pemasukan ?? 0}
@@ -141,12 +116,16 @@ function App() {
                 className="mb-6 shadow-emerald-500/10"
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="mb-6">
+                <MonthlyTargetCard totalExpense={summary?.total_pengeluaran ?? 0} />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <StatsCard
                     title="Pemasukan"
                     description="Kelola data pemasukan anda"
-                    value={formatRupiah(summary?.total_pemasukan ?? 0)}
-                    chart={<OverviewChart type="pemasukan" data={chartData ?? []} loading={chartLoading} viewLabel={chartView === 'daily' ? 'Harian' : chartView === 'weekly' ? 'Mingguan' : 'Bulanan'} />}
+                    value={formatPrivacy(summary?.total_pemasukan ?? 0, privacyMode)}
+                    chart={<OverviewChart type="pemasukan" data={chartData ?? []} loading={chartLoading} viewLabel={view === 'daily' ? 'Harian' : view === 'weekly' ? 'Mingguan' : view === 'monthly' ? 'Bulanan' : 'Kustom'} />}
                     action={
                         <Button 
                             variant="default" 
@@ -162,8 +141,8 @@ function App() {
                 <StatsCard
                     title="Pengeluaran"
                     description="Kelola data pengeluaran anda"
-                    value={formatRupiah(summary?.total_pengeluaran ?? 0)}
-                    chart={<OverviewChart type="pengeluaran" data={chartData ?? []} loading={chartLoading} viewLabel={chartView === 'daily' ? 'Harian' : chartView === 'weekly' ? 'Mingguan' : 'Bulanan'} />}
+                    value={formatPrivacy(summary?.total_pengeluaran ?? 0, privacyMode)}
+                    chart={<OverviewChart type="pengeluaran" data={chartData ?? []} loading={chartLoading} viewLabel={view === 'daily' ? 'Harian' : view === 'weekly' ? 'Mingguan' : view === 'monthly' ? 'Bulanan' : 'Kustom'} />}
                     action={
                         <Button 
                             variant="default" 
@@ -177,16 +156,15 @@ function App() {
                 />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                <div className="md:col-span-2">
-                    <BudgetTracker budgets={budgets ?? []} loading={budgetsLoading} />
-                </div>
-                <div>
-                    <CategoryDonutChart data={categorySummary ?? []} loading={categorySummaryLoading} />
-                </div>
+            <div className="mt-6">
+                <BudgetTracker budgets={budgets ?? []} loading={budgetsLoading} />
             </div>
 
-            <div className="mt-8">
+            <div className="mt-6">
+                <CategoryDistributionCards data={categorySummary ?? []} loading={categorySummaryLoading} />
+            </div>
+
+            <div className="mt-6">
                 <TransactionTable
                     transactions={transactions}
                     loading={txLoading}
@@ -282,6 +260,15 @@ function App() {
                 {/* Unified Global Dialogs */}
                 <TransactionDialog categories={categories} />
                 <CategoryDialog />
+                
+                <ConfirmDialog
+                    open={confirmDialog.isOpen}
+                    title={confirmDialog.title}
+                    description={confirmDialog.description}
+                    onConfirm={confirmDialog.onConfirm}
+                    onCancel={() => setConfirmDialog((s) => ({ ...s, isOpen: false }))}
+                    variant="destructive"
+                />
             </div>
         </div>
     )

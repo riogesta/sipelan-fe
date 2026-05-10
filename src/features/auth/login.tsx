@@ -3,6 +3,7 @@ import { login, register } from "@/services/api"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 
 type AuthMode = "login" | "signup"
 
@@ -59,7 +60,7 @@ export function AuthPage({ onLoginSuccess }: { onLoginSuccess: () => void }) {
                 setUsername("")
                 setPassword("")
                 setConfirmPassword("")
-                alert("Akun berhasil dibuat! Silakan tunggu aktivasi oleh administrator.")
+                toast.success("Akun berhasil dibuat! Silakan tunggu aktivasi oleh administrator.")
             }
         } catch (err) {
             setError(err instanceof Error ? err.message : "Terjadi kesalahan")
@@ -75,7 +76,7 @@ export function AuthPage({ onLoginSuccess }: { onLoginSuccess: () => void }) {
             description: "SIPELAN membantu anda memantau setiap pemasukan dan pengeluaran dengan presisi dan kemudahan."
         },
         signup: {
-            image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=2071&auto=format&fit=crop",
+            image: "https://images.unsplash.com/photo-1579621970795-87facc2f976d?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
             title: "Mulai Langkah Finansial Anda",
             description: "Daftar sekarang untuk mulai merencanakan masa depan keuangan yang lebih stabil dan terukur."
         }
@@ -232,7 +233,10 @@ export function AuthPage({ onLoginSuccess }: { onLoginSuccess: () => void }) {
                     key={mode}
                     src={sidePanelData[mode].image}
                     alt="Auth Background"
-                    className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.4] brightness-90 grayscale-[0.1] animate-in fade-in duration-1000"
+                    className={cn(
+                        "absolute inset-0 h-full w-full object-cover dark:brightness-[0.4] brightness-90 grayscale-[0.1] animate-in fade-in duration-1000",
+                        mode === "signup" && "-scale-x-100"
+                    )}
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-background/90 via-background/20 to-transparent flex items-end p-16">
                     <div className="max-w-md space-y-4 animate-in slide-in-from-bottom-8 duration-700">

@@ -1,7 +1,8 @@
 import { TrendingUp, TrendingDown, Wallet } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
-import { formatRupiah } from "@/lib/format"
+import { formatPrivacy } from "@/lib/format"
 import { cn } from "@/lib/utils"
+import { useUIStore } from "@/store/ui-store"
 
 interface BalanceCardProps {
     totalIncome: number
@@ -18,6 +19,7 @@ export function BalanceCard({
 }: BalanceCardProps) {
     const balance = totalIncome - totalExpense
     const isPositive = balance >= 0
+    const { privacyMode } = useUIStore()
 
     if (loading) {
         return (
@@ -44,7 +46,7 @@ export function BalanceCard({
                             Total Saldo
                         </p>
                         <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                            {formatRupiah(balance)}
+                            {formatPrivacy(balance, privacyMode)}
                         </h2>
                     </div>
                     
@@ -63,12 +65,12 @@ export function BalanceCard({
                 <div className="mt-6 flex items-center gap-4 text-xs font-medium">
                     <div className="flex flex-col gap-0.5">
                         <span className="text-white/60">Pemasukan</span>
-                        <span className="text-sm font-bold">{formatRupiah(totalIncome)}</span>
+                        <span className="text-sm font-bold">{formatPrivacy(totalIncome, privacyMode)}</span>
                     </div>
                     <div className="h-8 w-px bg-white/20" />
                     <div className="flex flex-col gap-0.5">
                         <span className="text-white/60">Pengeluaran</span>
-                        <span className="text-sm font-bold">{formatRupiah(totalExpense)}</span>
+                        <span className="text-sm font-bold">{formatPrivacy(totalExpense, privacyMode)}</span>
                     </div>
                 </div>
             </CardContent>

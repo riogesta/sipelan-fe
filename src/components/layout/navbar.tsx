@@ -1,4 +1,4 @@
-import { LayoutDashboard, ArrowRightLeft, Settings, Database, LogOut, Menu } from "lucide-react"
+import { LayoutDashboard, ArrowRightLeft, Settings, Database, LogOut, Menu, Eye, EyeOff } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 import {
@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { logout } from "@/services/api"
+import { useUIStore } from "@/store/ui-store"
 
 export type ViewType = "dashboard" | "transactions" | "categories" | "settings"
 
@@ -50,6 +51,7 @@ interface NavbarProps {
 
 export function Navbar({ activeView, onViewChange }: NavbarProps) {
     const [open, setOpen] = useState(false)
+    const { privacyMode, togglePrivacyMode } = useUIStore()
 
     const handleViewChange = (view: ViewType) => {
         onViewChange(view)
@@ -91,6 +93,17 @@ export function Navbar({ activeView, onViewChange }: NavbarProps) {
                             ))}
                             <div className="my-2 h-px bg-border" />
                             <button
+                                onClick={togglePrivacyMode}
+                                className="inline-flex h-10 items-center justify-start rounded-xl px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground text-foreground/80 cursor-pointer"
+                            >
+                                {privacyMode ? (
+                                    <EyeOff className="mr-2.5 h-4 w-4" />
+                                ) : (
+                                    <Eye className="mr-2.5 h-4 w-4" />
+                                )}
+                                {privacyMode ? "Sembunyikan Saldo" : "Tampilkan Saldo"}
+                            </button>
+                            <button
                                 onClick={() => logout()}
                                 className="inline-flex h-10 items-center justify-start rounded-xl px-3 text-sm font-medium transition-colors hover:bg-destructive/10 hover:text-destructive text-foreground/80 cursor-pointer"
                             >
@@ -121,6 +134,20 @@ export function Navbar({ activeView, onViewChange }: NavbarProps) {
                 </div>
 
                 <div className="hidden md:block mx-1 h-5 w-px bg-border" />
+
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={togglePrivacyMode}
+                    className="h-9 w-9 rounded-xl text-foreground/80 hover:bg-accent hover:text-accent-foreground"
+                    title={privacyMode ? "Tampilkan Saldo" : "Sembunyikan Saldo"}
+                >
+                    {privacyMode ? (
+                        <EyeOff className="h-4 w-4" />
+                    ) : (
+                        <Eye className="h-4 w-4" />
+                    )}
+                </Button>
 
                 <ThemeToggle />
                 

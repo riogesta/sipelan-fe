@@ -2,8 +2,9 @@ import { Edit2, Trash2, ArrowUpCircle, ArrowDownCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import type { Transaction } from "@/lib/types"
-import { formatRupiah, formatDate } from "@/lib/format"
+import { formatDate, formatPrivacy } from "@/lib/format"
 import { cn } from "@/lib/utils"
+import { useUIStore } from "@/store/ui-store"
 
 interface TransactionCardProps {
     transaction: Transaction
@@ -17,6 +18,7 @@ export function TransactionCard({
     onDelete,
 }: TransactionCardProps) {
     const isIncome = transaction.type === "pemasukan"
+    const { privacyMode } = useUIStore()
 
     return (
         <Card className="overflow-hidden border-none shadow-sm bg-card hover:bg-accent/5 transition-colors">
@@ -42,7 +44,7 @@ export function TransactionCard({
                                 "font-bold text-sm whitespace-nowrap",
                                 isIncome ? "text-emerald-600" : "text-rose-600"
                             )}>
-                                {isIncome ? "+" : "-"} {formatRupiah(transaction.total)}
+                                {isIncome ? "+" : "-"} {formatPrivacy(transaction.total, privacyMode)}
                             </p>
                         </div>
                         

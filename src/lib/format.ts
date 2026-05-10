@@ -11,6 +11,14 @@ export function formatRupiah(value: number): string {
 }
 
 /**
+ * Format a value for privacy mode.
+ */
+export function formatPrivacy(value: number, isPrivacy: boolean): string {
+    if (isPrivacy) return "Rp ••••••"
+    return formatRupiah(value)
+}
+
+/**
  * Format a date string (ISO) to a localized Indonesian date.
  */
 export function formatDate(dateStr: string): string {

@@ -24,11 +24,13 @@ import {
 import { Button } from "@/components/ui/button"
 import { Trash2, Edit2 } from "lucide-react"
 import type { Transaction, Pagination as PaginationType } from "@/lib/types"
-import { formatRupiah, formatDate } from "@/lib/format"
+import { formatDate, formatPrivacy } from "@/lib/format"
+import { useUIStore } from "@/store/ui-store"
 
 function createColumns(
     onEdit?: (transaction: Transaction) => void,
-    onDelete?: (id: number) => void
+    onDelete?: (id: number) => void,
+    isPrivacy: boolean = false
 ): ColumnDef<Transaction>[] {
     return [
         {
@@ -81,7 +83,7 @@ function createColumns(
                         }`}
                     >
                         {type === "pemasukan" ? "+" : "-"}{" "}
-                        {formatRupiah(row.original.total)}
+                        {formatPrivacy(row.original.total, isPrivacy)}
                     </div>
                 )
             },
@@ -212,7 +214,8 @@ export function TransactionTable({
     onEdit,
     onDelete,
 }: TransactionTableProps) {
-    const columns = createColumns(onEdit, onDelete)
+    const { privacyMode } = useUIStore()
+    const columns = createColumns(onEdit, onDelete, privacyMode)
 
     if (loading) {
         return (

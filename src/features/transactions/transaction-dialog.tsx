@@ -63,8 +63,8 @@ export function TransactionDialog({ categories }: TransactionDialogProps) {
     const { addTransaction, editTransaction } = useTransactionMutations()
     
     const isEditing = !!transaction
-    const currentType = isEditing ? (transaction?.type === "pemasukan" ? "income" : "expense") : (propType || "expense")
-    const isIncome = currentType === "income" || currentType === "pemasukan"
+    const currentType = isEditing ? transaction?.type : (propType || "pengeluaran")
+    const isIncome = currentType === "pemasukan"
     const title = isEditing ? "Edit Transaksi" : (isIncome ? "Tambah Pemasukan" : "Tambah Pengeluaran")
     const description = isEditing 
         ? "Perbarui detail transaksi anda di sini."
@@ -149,7 +149,7 @@ export function TransactionDialog({ categories }: TransactionDialogProps) {
 
         try {
             const res = await uploadMutation.mutateAsync(file)
-            setValue("attachment", (res as any).data.url)
+            setValue("attachment", res.data.url)
         } catch (err) {
             console.error("Upload failed", err)
         }

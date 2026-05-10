@@ -8,6 +8,7 @@ import {
 import type { ChartData } from "@/lib/types"
 import { formatRupiah } from "@/lib/format"
 import { cn } from "@/lib/utils"
+import { useUIStore } from "@/store/ui-store"
 
 const chartConfig = {
     pemasukan: {
@@ -31,6 +32,7 @@ interface OverviewChartProps {
 import { Skeleton } from "@/components/shared/skeleton"
 
 export function OverviewChart({ type, data, loading, viewLabel, className }: OverviewChartProps) {
+    const { privacyMode } = useUIStore()
     if (loading) {
         return (
             <div className={cn("h-[180px] w-full flex flex-col gap-3 p-4 justify-end mt-4", className)}>
@@ -99,20 +101,22 @@ export function OverviewChart({ type, data, loading, viewLabel, className }: Ove
                     tickFormatter={(value) => value}
                     style={{ fontSize: '11px', fontWeight: 500, fill: 'var(--color-muted-foreground)' }}
                 />
-                <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    width={65}
-                    tickFormatter={(value) =>
-                        new Intl.NumberFormat("id-ID", {
-                            notation: "compact",
-                            compactDisplay: "short",
-                            maximumFractionDigits: 1,
-                        }).format(value)
-                    }
-                    style={{ fontSize: '11px', fontWeight: 500, fill: 'var(--color-muted-foreground)' }}
-                />
+                {!privacyMode && (
+                    <YAxis
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        width={65}
+                        tickFormatter={(value) =>
+                            new Intl.NumberFormat("id-ID", {
+                                notation: "compact",
+                                compactDisplay: "short",
+                                maximumFractionDigits: 1,
+                            }).format(value)
+                        }
+                        style={{ fontSize: '11px', fontWeight: 500, fill: 'var(--color-muted-foreground)' }}
+                    />
+                )}
                 <ChartTooltip
                     cursor={false}
                     content={
@@ -130,7 +134,7 @@ export function OverviewChart({ type, data, loading, viewLabel, className }: Ove
                                             {name}
                                         </span>
                                         <span className="text-foreground font-mono font-medium">
-                                            {formatRupiah(Number(value))}
+                                            {privacyMode ? "Rp ••••••" : formatRupiah(Number(value))}
                                         </span>
                                     </div>
                                 </>
