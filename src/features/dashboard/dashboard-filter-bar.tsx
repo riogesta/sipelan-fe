@@ -1,7 +1,7 @@
 import { format, startOfMonth, endOfMonth, subDays, startOfYear, endOfYear } from "date-fns"
 import { id } from "date-fns/locale"
 import { Calendar as CalendarIcon, RotateCcw } from "lucide-react"
-import { DateRange } from "react-day-picker"
+import type { DateRange } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

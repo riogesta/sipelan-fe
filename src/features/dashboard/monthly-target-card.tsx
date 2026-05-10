@@ -2,9 +2,6 @@ import { useState, useEffect } from "react"
 import { Progress } from "@/components/ui/progress"
 import {
     Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
     CardDescription,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -20,7 +17,7 @@ import {
 import { CurrencyInput } from "@/components/shared/currency-input"
 import { formatPrivacy } from "@/lib/format"
 import { cn } from "@/lib/utils"
-import { Target, Edit2, TrendingUp, AlertCircle, CheckCircle2 } from "lucide-react"
+import { Target, Edit2 } from "lucide-react"
 import { useMonthlyTarget, useMonthlyTargetMutation } from "@/services/query-hooks"
 import { useUIStore } from "@/store/ui-store"
 
